@@ -1,4 +1,4 @@
-package come.example.wearexample;
+package com.example.wearexample;
 
 import android.app.Activity;
 import android.os.Bundle;

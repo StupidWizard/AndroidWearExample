@@ -1,4 +1,4 @@
-package come.example.wearexample;
+package com.example.wearexample;
 
 import android.app.Application;
 import android.test.ApplicationTestCase;

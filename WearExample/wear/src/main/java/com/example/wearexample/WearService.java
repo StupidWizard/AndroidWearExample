@@ -1,4 +1,4 @@
-package come.example.wearexample;
+package com.example.wearexample;
 
 import android.content.BroadcastReceiver;
 import android.content.Context;
@@ -13,9 +13,9 @@ import android.os.Handler;
 import android.os.Message;
 import android.support.wearable.watchface.CanvasWatchFaceService;
 import android.support.wearable.watchface.WatchFaceStyle;
-import android.text.format.Time;
 import android.view.SurfaceHolder;
 
+import java.util.Calendar;
 import java.util.TimeZone;
 
 /**
@@ -61,8 +61,8 @@ public class WearService extends CanvasWatchFaceService{
         final BroadcastReceiver mTimeZoneReceiver = new BroadcastReceiver() {
             @Override
             public void onReceive(Context context, Intent intent) {
-                mTime.clear(intent.getStringExtra("time-zone"));
-                mTime.setToNow();
+                mCalendar.setTimeZone(TimeZone.getDefault());
+                mCalendar.setTimeInMillis(System.currentTimeMillis());
             }
         };
 
@@ -73,7 +73,7 @@ public class WearService extends CanvasWatchFaceService{
 
         private boolean mRegisteredTimeZoneReceiver;
 
-        private Time mTime;
+        private Calendar mCalendar;
 
         private Paint mPaint;
 
@@ -116,7 +116,7 @@ public class WearService extends CanvasWatchFaceService{
         }
 
         private void initCountTimeObject() {
-            mTime = new Time();
+            mCalendar = Calendar.getInstance();
         }
 
 
@@ -155,8 +155,7 @@ public class WearService extends CanvasWatchFaceService{
                 registerReceiver();
 
                 // Update time zone in case it changed while we weren't visible.
-                mTime.clear(TimeZone.getDefault().getID());
-                mTime.setToNow();
+                mCalendar.setTimeZone(TimeZone.getDefault());
             }
             else {
                 unregisterReceiver();
@@ -205,16 +204,17 @@ public class WearService extends CanvasWatchFaceService{
         public void onDraw(Canvas canvas, Rect bounds) {
             super.onDraw(canvas, bounds);
 
-            mTime.setToNow();
+            mCalendar.setTimeInMillis(System.currentTimeMillis());
 
             mPaint.setColor(Color.WHITE);
             canvas.drawRect(bounds, mPaint);
 
             mPaint.setColor(Color.BLACK);
-            canvas.drawText(String.format("%02d:%02d:%02d", mTime.hour, mTime.minute, mTime.second),
+            canvas.drawText(String.format("%02d:%02d:%02d", mCalendar.get(Calendar.HOUR_OF_DAY),
+                            mCalendar.get(Calendar.MINUTE), mCalendar.get(Calendar.SECOND)),
                     bounds.centerX() - textWidth/2, bounds.centerY() + (mPaint.getTextSize())/3, mPaint);
 
-            canvas.drawRect(bounds.left, bounds.centerY() - 1, bounds.right, bounds.centerY() * 1, mPaint);
+            canvas.drawRect(bounds.left, bounds.centerY() - 1, bounds.right, bounds.centerY() + 1, mPaint);
         }
 
     }
